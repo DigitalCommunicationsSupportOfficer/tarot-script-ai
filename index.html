@@ -8,14 +8,12 @@
         :root {
             --bg-main: #0f111a;
             --bg-card: #181b29;
-            --bg-card-hover: #21263a;
             --accent-gold: #d4af37;
             --accent-glow: rgba(212, 175, 55, 0.2);
             --text-main: #e2e8f0;
             --text-muted: #94a3b8;
             --border-color: #2d3748;
             --danger: #e53e3e;
-            --success: #38a169;
         }
 
         * {
@@ -105,7 +103,7 @@
         /* Main Desktop Split View */
         .dashboard-container {
             display: grid;
-            grid-template-columns: 320px 1fr;
+            grid-template-columns: 340px 1fr;
             height: calc(100vh - 60px);
             overflow: hidden;
         }
@@ -165,7 +163,6 @@
             cursor: pointer;
             font-size: 0.95rem;
             letter-spacing: 0.5px;
-            transition: transform 0.1s, box-shadow 0.2s;
             box-shadow: 0 4px 15px var(--accent-glow);
             margin-top: 5px;
         }
@@ -184,7 +181,7 @@
         .caller-notes textarea {
             width: 100%;
             height: 100%;
-            min-height: 150px;
+            min-height: 140px;
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 6px;
@@ -255,7 +252,6 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            transition: border-color 0.3s;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
@@ -376,10 +372,14 @@
             <div>
                 <span class="section-label">Caller Situation</span>
                 <div class="category-grid">
-                    <button class="cat-btn active" onclick="setCategory('single')">Single / Dating</button>
-                    <button class="cat-btn" onclick="setCategory('relationship')">In Relationship</button>
-                    <button class="cat-btn" onclick="setCategory('career')">Career / Money</button>
-                    <button class="cat-btn" onclick="setCategory('life')">General Life</button>
+                    <button class="cat-btn active" onclick="setCategory('single', event)">Single / Dating</button>
+                    <button class="cat-btn" onclick="setCategory('relationship', event)">Relationship / Ex</button>
+                    <button class="cat-btn" onclick="setCategory('career', event)">Career / Job</button>
+                    <button class="cat-btn" onclick="setCategory('family', event)">Family & Conflict</button>
+                    <button class="cat-btn" onclick="setCategory('grief', event)">Grief & Loss</button>
+                    <button class="cat-btn" onclick="setCategory('finance', event)">Money & Debt</button>
+                    <button class="cat-btn" onclick="setCategory('purpose', event)">Life Purpose</button>
+                    <button class="cat-btn" onclick="setCategory('life', event)">General Life</button>
                 </div>
             </div>
 
@@ -421,25 +421,39 @@
     </div>
 
     <script>
-        // Database of Card Interpretations (Deep, Grounding, £30 Session Quality)
         const TAROT_DB = [
             {
                 name: "The Tower",
                 positions: {
                     validation: {
-                        single: "You are experiencing sudden shock or emotional disruption. An unexpected change has shaken your trust in how things were supposed to turn out.",
+                        single: "You are experiencing sudden emotional disruption. An unexpected change has shaken your trust in how things were supposed to turn out.",
                         relationship: "A sudden rift or difficult truth has come to light. It feels like the foundation beneath you is unstable right now.",
-                        career: "Unexpected workplace changes or sudden bad news have caught you off guard, creating an immediate spike in panic or stress."
+                        career: "Unexpected workplace changes or bad news caught you off guard, creating an immediate spike in panic or stress.",
+                        family: "A sudden household explosion or family argument has shattered peace. Old hidden tensions have finally boiled over.",
+                        grief: "The shock of loss feels overwhelming today. You feel as though your world was suddenly pulled out from under you.",
+                        finance: "An unexpected financial surprise or sudden bill has triggered an acute panic response about survival and security.",
+                        purpose: "A major collapse in your previous plans has left you feeling disoriented and uncertain about who you are.",
+                        life: "You feel like life is currently crumbling around you in multiple areas at once, causing severe mental fatigue."
                     },
                     release: {
-                        single: "Release the desire to keep holding up an old situation that was already cracking. Stop trying to repair something that harmed your peace.",
-                        relationship: "Release the impulse to fix everything in this exact hour. You do not need to rebuild the entire building while the ground is shaking.",
-                        career: "Release the guilt or feeling that you should have predicted this. Corporate shifts and outside factors are beyond your direct control."
+                        single: "Release the desire to keep holding up an old situation that was already cracking. Stop trying to repair what harmed your peace.",
+                        relationship: "Release the impulse to fix everything in this exact hour. You do not need to rebuild the entire house while the ground shakes.",
+                        career: "Release the guilt or feeling that you should have predicted this. Outside corporate shifts are beyond your control.",
+                        family: "Release taking responsibility for everyone else's explosive reactions. You are not responsible for holding adult relatives together.",
+                        grief: "Release demanding yourself to 'be strong' or keep it together today. Grief requires room to shatter before rebuilding.",
+                        finance: "Release panic-driven impulse decisions right now. Avoid making rash financial choices while operating out of extreme fear.",
+                        purpose: "Release clinging to an old identity or job title that no longer served your spirit anyway.",
+                        life: "Release trying to maintain a brave face for external onlookers. Accept that this moment is messy without shame."
                     },
                     control: {
-                        single: "Focus strictly on your immediate emotional safety today. Ground yourself in what remains solid: your worth and your independence.",
-                        relationship: "Step back and allow the dust to settle before having another intense conversation. Silence today is better than panicked words.",
-                        career: "Update your portfolio or CV quietly. Shift your focus from what was destroyed to the blank canvas in front of you."
+                        single: "Focus strictly on your immediate emotional safety today. Ground yourself in what remains solid: your dignity and autonomy.",
+                        relationship: "Step back and allow the dust to settle before having another heavy talk. Silence today is better than panicked words.",
+                        career: "Update your portfolio or resume quietly. Shift focus from what was lost to the blank canvas in front of you.",
+                        family: "Set an immediate boundary around your personal space. Do not step into family arguments that aren't yours to resolve.",
+                        grief: "Focus only on basic physical care right now: drink water, eat a meal, and rest without demanding answers.",
+                        finance: "Sit down with a paper and pen to review known facts rather than catastrophizing unseen potential losses.",
+                        purpose: "Ask yourself what core value matters most to you today, independent of your work status or achievements.",
+                        life: "Pick one tiny micro-task you can complete today to prove to your brain that you still hold power."
                     }
                 }
             },
@@ -447,19 +461,34 @@
                 name: "The Star",
                 positions: {
                     validation: {
-                        single: "You have been through a exhausting emotional storm and your spirit is seeking peace, renewal, and gentle hope.",
+                        single: "You have been through an exhausting emotional storm and your spirit is seeking peace, renewal, and gentle hope.",
                         relationship: "After a long period of tension, you are looking for clarity, quiet healing, and a sign that things can soften.",
-                        career: "You've been overworked and depleted. You are seeking inspiration and a reminder that your hard work actually matters."
+                        career: "You've been overworked and depleted. You are seeking inspiration and a reminder that your hard work actually matters.",
+                        family: "You are emotionally drained from endless family drama and desperately yearning for calm, quiet harmony.",
+                        grief: "You are seeking a peaceful sign or comforting presence from the loved one you lost, trying to find quiet warmth.",
+                        finance: "You are looking for light at the end of a dark financial tunnel, seeking reassurance that stability is returning.",
+                        purpose: "You are experiencing a quiet spiritual awakening, seeking a deeper sense of meaning and soul direction.",
+                        life: "You are in a phase of quiet healing, seeking hope and emotional sanctuary after months of strain."
                     },
                     release: {
                         single: "Release the pressure to rush into the next chapter immediately. Healing doesn't happen on an aggressive timeline.",
-                        relationship: "Release past resentments that you are keeping alive out of fear. Allow the relationship space to breathe without past baggage.",
-                        career: "Release the fear that you have fallen behind. Your long-term path is intact even if daily progress feels slow."
+                        relationship: "Release past resentments that you keep alive out of fear. Allow the connection space to breathe without past baggage.",
+                        career: "Release the fear that you have fallen behind. Your long-term path is intact even if daily progress feels slow.",
+                        family: "Release the expectation that toxic family members will suddenly transform into who you wish they were.",
+                        grief: "Release any guilt for having moments of lightness or joy. Feeling peace does not mean you love them any less.",
+                        finance: "Release the shame associated with past financial struggles. Focus on the positive trajectory starting now.",
+                        purpose: "Release comparing your spiritual or life timeline to others. Your path unfolds at its own natural pace.",
+                        life: "Release the urge to force immediate outcomes. Trust that peaceful energy is actively returning."
                     },
                     control: {
                         single: "Treat yourself with extreme care today. Do something purely for your own comfort and nervous system regulation.",
-                        relationship: "Extend a calm, peaceful gesture without demanding a deep explanation or immediate resolution in return.",
-                        career: "Spend 20 minutes focusing on a creative project or skill that genuinely reminds you why you chose this path."
+                        relationship: "Extend a calm, peaceful gesture without demanding a deep explanation or immediate response in return.",
+                        career: "Spend 20 minutes focusing on a project or skill that genuinely reminds you why you chose this path.",
+                        family: "Protect your emotional energy by engaging only in neutral, uplifting interactions with family today.",
+                        grief: "Light a candle, play a song, or sit in nature to honor their memory in a peaceful, quiet way.",
+                        finance: "Acknowledge one small financial positive step you have taken recently to anchor feelings of hope.",
+                        purpose: "Engage in a small daily ritual like meditation, writing, or walking to reconnect with your inner self.",
+                        life: "Focus on cultivating gratitude for the quiet, peaceful moments available to you right now."
                     }
                 }
             },
@@ -467,19 +496,34 @@
                 name: "Two of Swords",
                 positions: {
                     validation: {
-                        single: "You feel completely torn between two choices or emotions—wanting connection vs protecting your heart.",
+                        single: "You feel completely torn between two choices or emotions—wanting connection versus protecting your heart.",
                         relationship: "You are feeling stuck in a stalemate, avoiding a hard conversation because you fear the potential outcome.",
-                        career: "You are feeling paralyzed by a career decision, weighing pros and cons in endless mental loops."
+                        career: "You are feeling paralyzed by a career decision, weighing pros and cons in endless mental loops.",
+                        family: "You feel caught in the middle of family sides, feeling pressured to choose a stance you don't want to take.",
+                        grief: "You feel torn between keeping feelings buried to stay strong and allowing yourself to open up and cry.",
+                        finance: "You feel stuck between two risky financial decisions, fearing that either path might be a mistake.",
+                        purpose: "You feel paralyzed between staying in your safe comfort zone versus taking a leap toward your true passion.",
+                        life: "You are experiencing acute decision paralysis, feeling completely blocked and unable to move forward."
                     },
                     release: {
-                        single: "Release the belief that you must make a permanent decision today. It is completely okay to remain undecided for now.",
-                        relationship: "Release the need to read their mind. Stop trying to anticipate how they will react before they even speak.",
-                        career: "Release the illusion that there is a 'perfect' choice. Both options carry pros and cons, but waiting forever creates panic."
+                        single: "Release the belief that you must make a permanent decision today. It is completely okay to remain undecided.",
+                        relationship: "Release the need to read their mind. Stop trying to anticipate how they will react before they speak.",
+                        career: "Release the illusion that there is a 'perfect' choice. Both options have pros and cons, but waiting creates panic.",
+                        family: "Release the burden of mediating between relatives. It is not your job to solve conflicts between other adults.",
+                        grief: "Release forcing yourself to process feelings faster than you are ready to. Gentle boundaries are valid.",
+                        finance: "Release over-analyzing the same figures repeatedly. Constant re-reading won't alter the math.",
+                        purpose: "Release the fear of making a wrong choice. Every decision brings valuable information and growth.",
+                        life: "Release holding your breath waiting for complete certainty. Life rarely offers 100% guarantees."
                     },
                     control: {
-                        single: "Remove your blindfold by focusing strictly on observable facts rather than your anxious assumptions.",
-                        relationship: "Set a boundary around your own time today. Give yourself permission to pause the discussion until mind is clear.",
-                        career: "Gather one specific missing fact or detail today instead of over-analyzing existing incomplete information."
+                        single: "Remove your emotional blindfold by focusing strictly on observable facts rather than anxious assumptions.",
+                        relationship: "Set a boundary around your time today. Give yourself permission to pause the discussion until your mind clears.",
+                        career: "Gather one specific missing fact today instead of over-analyzing existing incomplete information.",
+                        family: "Step back into neutrality. Explicitly tell relatives that you love them both but won't take sides.",
+                        grief: "Give yourself permission to feel your emotions in small, manageable 10-minute increments.",
+                        finance: "Consult a clear, unbiased expert or third-party professional to break the mental stalemate.",
+                        purpose: "Take one tiny, low-stakes experiment toward one path to test how it actually feels in practice.",
+                        life: "Commit to making a decision on just one minor detail today to rebuild your self-trust."
                     }
                 }
             },
@@ -487,19 +531,34 @@
                 name: "Three of Swords",
                 positions: {
                     validation: {
-                        single: "There is an active, sharp ache in your chest. You are grieving a disappointment, rejection, or broken trust.",
+                        single: "There is an active, sharp ache in your heart. You are grieving a recent disappointment, rejection, or broken trust.",
                         relationship: "Words have been spoken that deeply hurt you. You are feeling wounded and misunderstood by someone close.",
-                        career: "You feel betrayed, undervalued, or pushed out at work. The emotional weight feels heavy to carry today."
+                        career: "You feel betrayed, undervalued, or pushed out at work. The emotional weight feels heavy to carry today.",
+                        family: "Past family wounds or painful rejections have been reopened, causing deep emotional pain.",
+                        grief: "The raw grief of heartbreak or loss is sitting heavily on your chest, making simple daily tasks feel hard.",
+                        finance: "You feel a painful sense of betrayal or loss over a money matter, contract breach, or financial disappointment.",
+                        purpose: "You feel heartbroken that a long-cherished dream or identity didn't turn out the way you envisioned.",
+                        life: "You are carrying sharp emotional pain from an unexpected betrayal or deeply disappointing event."
                     },
                     release: {
-                        single: "Release the urge to replay painful conversations over and over. Replaying the memory does not change the outcome.",
+                        single: "Release the urge to replay painful conversations over and over. Replaying memories does not change outcomes.",
                         relationship: "Release the need to force them to acknowledge your pain right now. Pain cannot be cured by an argument.",
-                        career: "Release taking workplace coldness personally. Corporate or professional decisions rarely reflect your core value."
+                        career: "Release taking workplace coldness personally. Corporate or professional decisions rarely reflect your personal worth.",
+                        family: "Release hoping that painful family members will apologize for past trauma. Focus on your own healing.",
+                        grief: "Release trying to rush through heartbreak. Emotional pain requires gentle time and validation to heal.",
+                        finance: "Release punishing yourself for past financial mistakes or scams. Blame only prolongs the distress.",
+                        purpose: "Release grieving what 'could have been.' Accept the present moment as the starting point for repair.",
+                        life: "Release carrying everyone else's emotional cruelty as a reflection of your own personal value."
                     },
                     control: {
-                        single: "Acknowledge the grief without judgment, then actively do one small physical thing to care for your body today.",
-                        relationship: "Communicate your boundary calmly, then step away. Give the emotional wound room to breathe without reopening it.",
-                        career: "Separate your self-esteem from your job title today. Seek support from trusted friends outside of work."
+                        single: "Acknowledge the grief without judgment, then do one small physical thing to care for your body today.",
+                        relationship: "Communicate your boundary calmly, then step away. Give the emotional wound room to breathe.",
+                        career: "Separate your self-esteem from your job title today. Seek support from trusted friends outside of work.",
+                        family: "Create emotional distance from hurtful family members. Limit conversations to necessary, brief topics.",
+                        grief: "Allow yourself to cry or write out feelings freely without holding back or putting up a facade.",
+                        finance: "Focus strictly on securing your basic current needs today rather than dwelling on what was lost.",
+                        purpose: "Gently nurture yourself today as you would a grieving friend, offering patience and kindness.",
+                        life: "Focus on gentle, self-soothing practices: warm food, quiet music, and rest for your nervous system."
                     }
                 }
             }
@@ -509,10 +568,10 @@
         let currentMode = 'script';
         let currentDraw = [];
 
-        function setCategory(cat) {
+        function setCategory(cat, event) {
             currentCategory = cat;
             document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            if(event) event.target.classList.add('active');
             if (currentDraw.length > 0) renderSpread();
         }
 
@@ -524,7 +583,6 @@
         }
 
         function drawSpread() {
-            // Pick 3 unique cards
             let shuffled = [...TAROT_DB].sort(() => 0.5 - Math.random());
             currentDraw = shuffled.slice(0, 3);
             renderSpread();
@@ -565,9 +623,8 @@
             });
         }
 
-        // Session Timer Logic
         let timerInterval;
-        let timeLeft = 1200; // 20 mins
+        let timeLeft = 1200;
 
         document.getElementById('startTimerBtn').onclick = function() {
             if (timerInterval) return;
@@ -598,7 +655,6 @@
             alert("Anchor script copied to clipboard!");
         }
 
-        // Initial Draw
         drawSpread();
     </script>
 </body>
