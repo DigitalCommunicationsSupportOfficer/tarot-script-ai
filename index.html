@@ -14,7 +14,6 @@
             --text-muted: #94a3b8;
             --border-color: #2d3748;
             --danger: #e53e3e;
-            --success: #38a169;
         }
 
         * {
@@ -94,7 +93,6 @@
             font-size: 0.8rem;
             border-radius: 4px;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
         .btn-timer:hover {
@@ -167,7 +165,6 @@
             letter-spacing: 0.5px;
             box-shadow: 0 4px 15px var(--accent-glow);
             margin-top: 5px;
-            transition: all 0.2s;
         }
 
         .btn-draw:hover {
@@ -256,7 +253,7 @@
             flex-direction: column;
             gap: 15px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transition: border-color 0.2s, transform 0.2s;
+            transition: border-color 0.2s;
         }
 
         .card-slot:hover {
@@ -327,36 +324,20 @@
             background: rgba(212, 175, 55, 0.05);
             border: 1px solid var(--accent-gold);
             border-radius: 8px;
-            padding: 18px 22px;
+            padding: 15px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .anchor-box.highlight {
-            background: rgba(212, 175, 55, 0.15);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
         }
 
         .anchor-text {
-            font-size: 0.92rem;
+            font-size: 0.9rem;
             color: var(--text-main);
-            line-height: 1.5;
         }
 
         .anchor-text strong {
             color: var(--accent-gold);
-            font-size: 0.8rem;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .phrase-content {
-            margin-top: 4px;
-            font-style: italic;
-            color: #f8fafc;
         }
 
         .btn-copy {
@@ -368,7 +349,6 @@
             cursor: pointer;
             font-size: 0.8rem;
             white-space: nowrap;
-            transition: all 0.2s;
         }
 
         .btn-copy:hover {
@@ -376,49 +356,10 @@
             color: #000;
         }
 
-        /* Custom Notification Toast */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--bg-card);
-            border: 1px solid var(--accent-gold);
-            color: var(--text-main);
-            padding: 10px 18px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.3s ease;
-            pointer-events: none;
-            z-index: 999;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.4; }
             100% { opacity: 1; }
-        }
-
-        @media (max-width: 900px) {
-            .dashboard-container {
-                grid-template-columns: 1fr;
-                height: auto;
-                overflow: visible;
-            }
-            body {
-                height: auto;
-                overflow: auto;
-            }
-            .cards-container {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
 </head>
@@ -481,54 +422,51 @@
             </div>
 
             <!-- Bottom Live Reassurance Anchor -->
-            <div class="anchor-box" id="anchorBox">
+            <div class="anchor-box">
                 <div class="anchor-text">
                     <strong>Recommended Closing Reassurance Phrase:</strong><br>
-                    <div class="phrase-content" id="anchorPhrase">Generating personalized phrase...</div>
+                    <span id="anchorPhrase">"You don't need to force an answer or a decision today. Focus on taking just one deep breath and releasing what isn't yours to fix."</span>
                 </div>
                 <button class="btn-copy" onclick="copyAnchor()">Copy Script</button>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification Message Box (Replaces alert) -->
-    <div class="toast" id="toast">Script copied to clipboard!</div>
-
     <script>
         // FULL 78 TAROT CARD DEFINITIONS
         const MAJOR_ARCANA = [
-            { name: "The Fool", suit: "Major Arcana", core: "new beginnings, vulnerability, stepping into the unknown, unburdened risk" },
-            { name: "The Magician", suit: "Major Arcana", core: "personal agency, resourceful action, taking initiative, utilizing tools at hand" },
-            { name: "The High Priestess", suit: "Major Arcana", core: "inner quiet, trusting non-verbal instincts, waiting for hidden facts, deep perception" },
-            { name: "The Empress", suit: "Major Arcana", core: "emotional nourishment, patience, self-care, cultivating comfort and safety" },
-            { name: "The Emperor", suit: "Major Arcana", core: "boundaries, personal structure, self-regulation, reclaiming emotional control" },
-            { name: "The Hierophant", suit: "Major Arcana", core: "established traditions, traditional wisdom, structured guidance, spiritual baseline" },
-            { name: "The Lovers", suit: "Major Arcana", core: "alignment of values, choice between paths, deep emotional reciprocity, inner harmony" },
-            { name: "The Chariot", suit: "Major Arcana", core: "determined focus, managing opposing forces, disciplined emotional boundary" },
-            { name: "Strength", suit: "Major Arcana", core: "quiet patience, mastering anxiety with gentleness, emotional resilience, soft fortitude" },
-            { name: "The Hermit", suit: "Major Arcana", core: "stepping back from external noise, solitary reflection, seeking truth within" },
-            { name: "Wheel of Fortune", suit: "Major Arcana", core: "cycles of change, accepting natural rhythm, external factors shifting, adaptability" },
-            { name: "Justice", suit: "Major Arcana", core: "objective reality, cause and effect, psychological balance, unclouded truth" },
-            { name: "The Hanged Man", suit: "Major Arcana", core: "pausing forced movement, viewing from a new angle, surrender to temporary quiet" },
-            { name: "Death", suit: "Major Arcana", core: "closure of a chapter, natural transition, releasing the old to allow renewal" },
-            { name: "Temperance", suit: "Major Arcana", core: "emotional de-escalation, moderation, restoring internal baseline, calm patience" },
-            { name: "The Devil", suit: "Major Arcana", core: "obsessive loops, mental traps, feeling bound by illusion, recognizing freedom" },
-            { name: "The Tower", suit: "Major Arcana", core: "sudden disruption, breaking illusions, sudden clearing of stagnant energy" },
-            { name: "The Star", suit: "Major Arcana", core: "hopeful renewal, emotional sanctuary, gentle recovery after acute distress" },
-            { name: "The Moon", suit: "Major Arcana", core: "navigating uncertainty, subconscious fears, unverified assumptions, projection" },
-            { name: "The Sun", suit: "Major Arcana", core: "clarity, warmth, emotional transparency, reclaiming joy and direct understanding" },
-            { name: "Judgement", suit: "Major Arcana", core: "self-evaluation, forgiving past mistakes, answering inner call, clean slate" },
-            { name: "The World", suit: "Major Arcana", core: "completion of cycle, total integration, emotional wholeness, closure" }
+            { name: "The Fool", suit: "Major Arcana", core: "New beginnings, vulnerability, stepping into the unknown, unburdened risk" },
+            { name: "The Magician", suit: "Major Arcana", core: "Personal agency, resourceful action, taking initiative, utilizing tools at hand" },
+            { name: "The High Priestess", suit: "Major Arcana", core: "Inner quiet, trusting non-verbal instincts, waiting for hidden facts, deep perception" },
+            { name: "The Empress", suit: "Major Arcana", core: "Emotional nourishment, patience, self-care, cultivating comfort and safety" },
+            { name: "The Emperor", suit: "Major Arcana", core: "Boundaries, personal structure, self-regulation, reclaiming emotional control" },
+            { name: "The Hierophant", suit: "Major Arcana", core: "Established traditions, traditional wisdom, structured guidance, spiritual baseline" },
+            { name: "The Lovers", suit: "Major Arcana", core: "Alignment of values, choice between paths, deep emotional reciprocity, inner harmony" },
+            { name: "The Chariot", suit: "Major Arcana", core: "Determined focus, managing opposing forces, disciplined emotional boundary" },
+            { name: "Strength", suit: "Major Arcana", core: "Quiet patience, mastering anxiety with gentleness, emotional resilience, soft fortitude" },
+            { name: "The Hermit", suit: "Major Arcana", core: "Stepping back from external noise, solitary reflection, seeking truth within" },
+            { name: "Wheel of Fortune", suit: "Major Arcana", core: "Cycles of change, accepting natural rhythm, external factors shifting, adaptability" },
+            { name: "Justice", suit: "Major Arcana", core: "Objective reality, cause and effect, psychological balance, unclouded truth" },
+            { name: "The Hanged Man", suit: "Major Arcana", core: "Pausing forced movement, viewing from new angle, surrender to temporary quiet" },
+            { name: "Death", suit: "Major Arcana", core: "Closure of a chapter, natural transition, releasing the old to allow renewal" },
+            { name: "Temperance", suit: "Major Arcana", core: "Emotional de-escalation, moderation, restoring internal baseline, calm patience" },
+            { name: "The Devil", suit: "Major Arcana", core: "Obsessive loops, mental traps, feeling bound by illusion, recognizing freedom" },
+            { name: "The Tower", suit: "Major Arcana", core: "Sudden disruption, breaking illusions, sudden clearing of stagnant energy" },
+            { name: "The Star", suit: "Major Arcana", core: "Hopeful renewal, emotional sanctuary, gentle recovery after acute distress" },
+            { name: "The Moon", suit: "Major Arcana", core: "Navigating uncertainty, subconscious fears, unverified assumptions, projection" },
+            { name: "The Sun", suit: "Major Arcana", core: "Clarity, warmth, emotional transparency, reclaiming joy and direct understanding" },
+            { name: "Judgement", suit: "Major Arcana", core: "Self-evaluation, forgiving past mistakes, answering inner call, clean slate" },
+            { name: "The World", suit: "Major Arcana", core: "Completion of cycle, total Integration, emotional wholeness, closure" }
         ];
 
         const SUITS = ["Wands", "Cups", "Swords", "Pentacles"];
         const MINOR_ARCANA = [];
 
         const MINOR_THEMES = {
-            "Wands": { focus: "energy, motivation, passion, action", flavor: "creative drive" },
-            "Cups": { focus: "feelings, emotional connection, vulnerability, intuition", flavor: "heart matters" },
-            "Swords": { focus: "thought loops, clarity, boundaries, stress, decisions", flavor: "mental bandwidth" },
-            "Pentacles": { focus: "grounding, resources, physical body, practical security", flavor: "tangible reality" }
+            "Wands": { focus: "energy, motivation, passion, action" },
+            "Cups": { focus: "feelings, emotional connection, vulnerability, intuition" },
+            "Swords": { focus: "thought loops, clarity, boundaries, stress, decisions" },
+            "Pentacles": { focus: "grounding, resources, physical body, practical security" }
         };
 
         const RANKS = [
@@ -560,86 +498,27 @@
 
         const FULL_TAROT_DB = [...MAJOR_ARCANA, ...MINOR_ARCANA];
 
-        let lastPhrase = "";
-        let phraseHistory = [];
-
-        // Rich Phrase Templates that dynamically synthesize with the drawn cards and category context
-        const REASSURANCE_TEMPLATES = [
-            (c1, c2, c3, cat) => `"Remember that as ${c1.name} reminds us, your current feelings are valid, but ${c2.name} calls you to release what isn't yours to fix. Focus strictly on ${c3.core} today."`,
-            (c1, c2, c3, cat) => `"You don't need to force a final answer regarding ${cat} today. Let go of the tension around ${c2.core} and honor the grounding energy of ${c3.name}."`,
-            (c1, c2, c3, cat) => `"Take a deep breath and step away from overthinking. With ${c1.name} guiding your awareness, your only job right now is to practice ${c3.core} and let the rest settle."`,
-            (c1, c2, c3, cat) => `"Your peace of mind is sacred. Release the urge to control external outcomes (${c2.name}) and bring your energy back to standard self-care with ${c3.name}."`,
-            (c1, c2, c3, cat) => `"Give yourself permission to pause. You are moving through a phase of ${c1.core}; trust that taking small steps around ${c3.core} will naturally restore your balance."`,
-            (c1, c2, c3, cat) => `"You have survived 100% of your hardest days. As shown by ${c3.name}, focusing on simple, grounded actions today will protect your heart and clarify your next step."`,
-            (c1, c2, c3, cat) => `"Clarity doesn't come from forcing answers—it comes from space. Release ${c2.core} today, and rest in the knowledge that you are doing enough."`,
-            (c1, c2, c3, cat) => `"You do not have to carry the weight of ${cat} all at once. Let ${c2.name} remind you to drop what isn't yours, and let ${c3.name} guide your immediate focus."`
+        // EXACTLY TWO FIXED OPTIONS
+        const TWO_REASSURANCE_OPTIONS = [
+            "\"You don't need to force an answer or a decision today. Focus on taking just one deep breath and releasing what isn't yours to fix.\"",
+            "\"Take a step back and lower your shoulders. You have survived 100% of your hardest days, and clarity will return as soon as you give yourself permission to rest.\""
         ];
 
-        // Deep static backup bank organized by situation
-        const STATIC_PHRASE_BANK = {
-            single: [
-                "\"You don't need to force an answer or a decision today. Focus on taking just one deep breath and releasing what isn't yours to fix.\"",
-                "\"Your self-worth isn't on trial here. Trust that the right connection will meet you where you are without requiring you to shrink.\"",
-                "\"Give yourself permission to stop over-analyzing every sign. Your heart knows how to recognize genuine peace when it arrives.\"",
-                "\"Love isn't a race or a test you can fail. Step back into your own power and let time reveal who is truly ready for you.\""
-            ],
-            relationship: [
-                "\"You cannot control someone else's timeline or emotional speed. Focus on holding your own boundary and honoring your peace today.\"",
-                "\"It is safe to step off the emotional roller coaster right now. Let the dust settle before you try to figure out the next step.\"",
-                "\"Remember that choosing your own tranquility is never selfish—it is the foundation for any healthy resolution.\"",
-                "\"Give yourself grace today. You are allowed to love someone while still setting clear, healthy limits for yourself.\""
-            ],
-            career: [
-                "\"Your productivity does not define your human value. Take a step back from the urgency and give your nervous system space to reset.\"",
-                "\"You don't have to solve every work variable today. Simply focus on the single task right in front of you.\"",
-                "\"Trust that your skills and resilience will hold you steady through this transition. You are far more capable than your anxiety is letting you feel.\"",
-                "\"One stressful chapter at work does not equal a failed career. Take a step back and protect your personal boundaries tonight.\""
-            ],
-            family: [
-                "\"You are allowed to love your family while still protecting your own emotional perimeter. Hold your quiet boundary with grace.\"",
-                "\"It is not your duty to repair dynamic patterns that were built before you. Focus on staying centered in your own space.\"",
-                "\"Peace in your home starts with peace in your spirit. Let go of the urge to referee things outside your control.\"",
-                "\"You don't need to defend your choices to everyone. Focus on doing what keeps your immediate environment peaceful.\""
-            ],
-            grief: [
-                "\"Grief does not move in a straight line, and you don't need to put on a brave face today. Be gentle with your heart.\"",
-                "\"Give yourself credit for simply breathing through this moment. Honor your feelings without forcing yourself to be strong.\"",
-                "\"Resting is an active part of healing. Allow yourself to rest today without guilt or expectation.\"",
-                "\"Hold space for your feelings without judgment. Healing takes the time it takes, and you are doing standard care for your soul.\""
-            ],
-            finance: [
-                "\"Panicking about tomorrow won't fix today's balance. Take one grounded, practical action step and release the rest.\"",
-                "\"Your current financial situation is a temporary season, not your permanent story. Keep your focus on steady, calm steps.\"",
-                "\"Give your mind permission to rest tonight. Clear thinking comes from a rested spirit, not late-night worry loops.\"",
-                "\"Focus on what you can manage right now. One grounded financial choice today builds the foundation for tomorrow's peace.\""
-            ],
-            purpose: [
-                "\"You don't need to have your entire life roadmap figured out this afternoon. Following one quiet curiosity is enough.\"",
-                "\"Your journey is completely unique—stop comparing your timing to someone else's highlight reel.\"",
-                "\"Trust that stepping forward in small, deliberate ways will naturally reveal the direction you are meant to take.\"",
-                "\"Your calling is felt, not forced. Give yourself space to breathe and let your genuine instincts return.\""
-            ],
-            life: [
-                "\"Take a deep breath and lower your shoulders. You are handling far more than you give yourself credit for right now.\"",
-                "\"You have survived 100% of your hardest days so far. Trust that this moment will pass and clarity will return.\"",
-                "\"Release the need to know how everything turns out. Focus only on making the next right, quiet choice for yourself.\"",
-                "\"In the middle of noise, your greatest strength is choosing quiet inner calm. Trust that you are right where you need to be.\""
-            ]
-        };
-
-        const CATEGORY_NAMES = {
-            single: "dating and romantic connections",
-            relationship: "relationship dynamics and past connections",
-            career: "workplace and professional matters",
-            family: "family and household harmony",
-            grief: "emotional loss and recovery",
-            finance: "financial security and peace",
-            purpose: "life direction and personal alignment",
-            life: "general life direction"
-        };
+        let currentOptionIndex = 0;
 
         function generateContextualText(card, positionKey, category) {
-            const catLabel = CATEGORY_NAMES[category] || "your situation";
+            const catLabels = {
+                single: "dating and connection",
+                relationship: "relationship dynamics and exes",
+                career: "workplace and job security",
+                family: "family dynamics and household peace",
+                grief: "loss and emotional healing",
+                finance: "money stress and security",
+                purpose: "life direction and personal value",
+                life: "overall baseline stability"
+            };
+
+            const catLabel = catLabels[category] || "your current situation";
 
             if (positionKey === 'validation') {
                 return `You are currently experiencing the energy of ${card.name}. In terms of ${catLabel}, this points directly to ${card.core}. You haven't been crazy for feeling drained—your spirit is actively processing this exact frequency right now.`;
@@ -657,25 +536,18 @@
         function setCategory(cat, event) {
             currentCategory = cat;
             document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
-            if(event && event.target) {
-                event.target.classList.add('active');
-            }
-            if (currentDraw.length > 0) {
-                renderSpread();
-            }
+            if(event) event.target.classList.add('active');
+            if (currentDraw.length > 0) renderSpread();
         }
 
         function setMode(mode) {
             currentMode = mode;
             document.getElementById('btnScript').classList.toggle('active', mode === 'script');
             document.getElementById('btnBullet').classList.toggle('active', mode === 'bullet');
-            if (currentDraw.length > 0) {
-                renderSpread();
-            }
+            if (currentDraw.length > 0) renderSpread();
         }
 
         function drawSpread() {
-            // Full random shuffle of 78 cards
             let shuffled = [...FULL_TAROT_DB].sort(() => 0.5 - Math.random());
             currentDraw = shuffled.slice(0, 3);
             renderSpread();
@@ -716,53 +588,14 @@
                 container.appendChild(slot);
             });
 
-            // Trigger non-repeating closing phrase update
-            updateReassurancePhrase();
+            // Toggle strictly between Option 1 (index 0) and Option 2 (index 1)
+            toggleTwoReassurancePhrases();
         }
 
-        function updateReassurancePhrase() {
-            let candidatePhrases = [];
-            const catName = CATEGORY_NAMES[currentCategory] || "your situation";
-
-            // Synthesize dynamic card-aware phrases if cards are drawn
-            if (currentDraw.length === 3) {
-                const [c1, c2, c3] = currentDraw;
-                REASSURANCE_TEMPLATES.forEach(tpl => {
-                    candidatePhrases.push(tpl(c1, c2, c3, catName));
-                });
-            }
-
-            // Append static phrases for variety
-            const staticList = STATIC_PHRASE_BANK[currentCategory] || STATIC_PHRASE_BANK['life'];
-            candidatePhrases = candidatePhrases.concat(staticList);
-
-            // Filter out recently used phrases to guarantee uniqueness
-            let validPhrases = candidatePhrases.filter(p => p !== lastPhrase && !phraseHistory.includes(p));
-
-            // If history pool gets too saturated, reset history retaining only the last entry
-            if (validPhrases.length === 0) {
-                phraseHistory = [lastPhrase];
-                validPhrases = candidatePhrases.filter(p => p !== lastPhrase);
-            }
-
-            // Pick a random guaranteed distinct phrase
-            const chosenPhrase = validPhrases[Math.floor(Math.random() * validPhrases.length)];
-
-            // Update tracking states
-            lastPhrase = chosenPhrase;
-            phraseHistory.push(chosenPhrase);
-            if (phraseHistory.length > 10) phraseHistory.shift();
-
-            // Render to DOM with UI glow effect
-            const anchorEl = document.getElementById('anchorPhrase');
-            const boxEl = document.getElementById('anchorBox');
-
-            anchorEl.innerText = chosenPhrase;
-            
-            boxEl.classList.add('highlight');
-            setTimeout(() => {
-                boxEl.classList.remove('highlight');
-            }, 400);
+        function toggleTwoReassurancePhrases() {
+            document.getElementById('anchorPhrase').innerText = TWO_REASSURANCE_OPTIONS[currentOptionIndex];
+            // Toggle between 0 and 1 on every draw/update
+            currentOptionIndex = (currentOptionIndex === 0) ? 1 : 0;
         }
 
         // Timer Logic
@@ -792,42 +625,14 @@
             el.classList.remove('warning');
         };
 
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2500);
-        }
-
         function copyAnchor() {
             const text = document.getElementById('anchorPhrase').innerText;
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => {
-                    showToast("Anchor script copied to clipboard!");
-                }).catch(() => {
-                    fallbackCopy(text);
-                });
-            } else {
-                fallbackCopy(text);
-            }
+            navigator.clipboard.writeText(text);
+            alert("Anchor script copied to clipboard!");
         }
 
-        function fallbackCopy(text) {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            showToast("Anchor script copied to clipboard!");
-        }
-
-        // Initialize on Load
-        window.onload = function() {
-            drawSpread();
-        };
+        // Initial Spread Generation
+        drawSpread();
     </script>
 </body>
 </html>
