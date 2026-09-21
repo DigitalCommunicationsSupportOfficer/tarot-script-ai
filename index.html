@@ -328,6 +328,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 15px;
         }
 
         .anchor-text {
@@ -343,10 +344,11 @@
             background: var(--bg-card);
             border: 1px solid var(--accent-gold);
             color: var(--accent-gold);
-            padding: 6px 12px;
+            padding: 8px 14px;
             border-radius: 4px;
             cursor: pointer;
             font-size: 0.8rem;
+            white-space: nowrap;
         }
 
         .btn-copy:hover {
@@ -460,7 +462,6 @@
         const SUITS = ["Wands", "Cups", "Swords", "Pentacles"];
         const MINOR_ARCANA = [];
 
-        // Generate 56 Minor Arcana dynamically with authentic Tarot themes
         const MINOR_THEMES = {
             "Wands": { focus: "energy, motivation, passion, action", flavor: "creative drive" },
             "Cups": { focus: "feelings, emotional connection, vulnerability, intuition", flavor: "heart matters" },
@@ -495,10 +496,52 @@
             });
         });
 
-        // Combine into full 78 deck
         const FULL_TAROT_DB = [...MAJOR_ARCANA, ...MINOR_ARCANA];
 
-        // CONTEXTUAL SCRIPT GENERATION ENGINE
+        // REASSURANCE PHRASE BANK (BY CATEGORY & GENERAL DYNAMIC SLOTS)
+        const REASSURANCE_PHRASES = {
+            single: [
+                "\"You don't need to force an answer or a decision today. Focus on taking just one deep breath and releasing what isn't yours to fix.\"",
+                "\"Your self-worth isn't on trial here. Trust that the right connection will meet you where you are without requiring you to shrink.\"",
+                "\"Give yourself permission to stop over-analyzing every sign. Your heart knows how to recognize genuine peace when it arrives.\""
+            ],
+            relationship: [
+                "\"You cannot control someone else's timeline or emotional speed. Focus on holding your own boundary and honoring your peace today.\"",
+                "\"It is safe to step off the emotional roller coaster right now. Let the dust settle before you try to figure out the next step.\"",
+                "\"Remember that choosing your own tranquility is never selfish—it is the foundation for any healthy resolution.\""
+            ],
+            career: [
+                "\"Your productivity does not define your human value. Take a step back from the urgency and give your nervous system space to reset.\"",
+                "\"You don't have to solve every work variable today. Simply focus on the single task right in front of you.\"",
+                "\"Trust that your skills and resilience will hold you steady through this transition. You are far more capable than your anxiety is letting you feel.\""
+            ],
+            family: [
+                "\"You are allowed to love your family while still protecting your own emotional perimeter. Hold your quiet boundary with grace.\"",
+                "\"It is not your duty to repair dynamic patterns that were built before you. Focus on staying centered in your own space.\"",
+                "\"Peace in your home starts with peace in your spirit. Let go of the urge to referee things outside your control.\""
+            ],
+            grief: [
+                "\"Grief does not move in a straight line, and you don't need to put on a brave face today. Be gentle with your heart.\"",
+                "\"Give yourself credit for simply breathing through this moment. Honor your feelings without forcing yourself to be strong.\"",
+                "\"Resting is an active part of healing. Allow yourself to rest today without guilt or expectation.\""
+            ],
+            finance: [
+                "\"Panicking about tomorrow won't fix today's balance. Take one grounded, practical action step and release the rest.\"",
+                "\"Your current financial situation is a temporary season, not your permanent story. Keep your focus on steady, calm steps.\"",
+                "\"Give your mind permission to rest tonight. Clear thinking comes from a rested spirit, not late-night worry loops.\""
+            ],
+            purpose: [
+                "\"You don't need to have your entire life roadmap figured out this afternoon. Following one quiet curiosity is enough.\"",
+                "\"Your journey is completely unique—stop comparing your timing to someone else's highlight reel.\"",
+                "\"Trust that stepping forward in small, deliberate ways will naturally reveal the direction you are meant to take.\""
+            ],
+            life: [
+                "\"Take a deep breath and lower your shoulders. You are handling far more than you give yourself credit for right now.\"",
+                "\"You have survived 100% of your hardest days so far. Trust that this moment will pass and clarity will return.\"",
+                "\"Release the need to know how everything turns out. Focus only on making the next right, quiet choice for yourself.\""
+            ]
+        };
+
         function generateContextualText(card, positionKey, category) {
             const catLabels = {
                 single: "dating and connection",
@@ -581,6 +624,15 @@
                 `;
                 container.appendChild(slot);
             });
+
+            // Update Dynamic Reassurance Phrase on every draw or category change
+            updateReassurancePhrase();
+        }
+
+        function updateReassurancePhrase() {
+            const phrases = REASSURANCE_PHRASES[currentCategory] || REASSURANCE_PHRASES['life'];
+            const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+            document.getElementById('anchorPhrase').innerText = randomPhrase;
         }
 
         // Timer Logic
