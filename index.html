@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psychic Line Operator Grounding Tool</title>
+    <style>
+        :root {
+            --bg-main: #0f111a;
+            --bg-card: #181b29;
+            --bg-card-hover: #21263a;
+            --accent-gold: #d4af37;
+            --accent-glow: rgba(212, 175, 55, 0.2);
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-color: #2d3748;
+            --danger: #e53e3e;
+            --success: #38a169;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: grid;
+            grid-template-rows: 60px 1fr;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Top Header Navigation */
+        header {
+            background-color: #090a10;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .logo-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-gold);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rate-badge {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* Timer Control Module */
+        .timer-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--bg-card);
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .timer-display {
+            font-family: monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+            width: 70px;
+        }
+
+        .timer-display.warning {
+            color: var(--danger);
+            animation: pulse 1s infinite;
+        }
+
+        .btn-timer {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-timer:hover {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+        }
+
+        /* Main Desktop Split View */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            height: calc(100vh - 60px);
+            overflow: hidden;
+        }
+
+        /* Left Control Bar */
+        .sidebar {
+            background-color: #121420;
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .cat-btn {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .cat-btn.active {
+            background-color: var(--accent-gold);
+            color: #000;
+            font-weight: bold;
+            border-color: var(--accent-gold);
+        }
+
+        .btn-draw {
+            background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
+            color: #000;
+            font-weight: bold;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            transition: transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px var(--accent-glow);
+            margin-top: 5px;
+        }
+
+        .btn-draw:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .caller-notes {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .caller-notes textarea {
+            width: 100%;
+            height: 100%;
+            min-height: 150px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-main);
+            padding: 10px;
+            font-size: 0.85rem;
+            resize: none;
+        }
+
+        .caller-notes textarea:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+        }
+
+        /* Right Content Panel */
+        .workspace {
+            padding: 25px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            background: #0f111a;
+        }
+
+        .view-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .toggle-group {
+            display: flex;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 2px;
+        }
+
+        .toggle-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .toggle-btn.active {
+            background: var(--border-color);
+            color: var(--text-main);
+        }
+
+        /* 3 Card Layout Workspace */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card-slot {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            transition: border-color 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .card-slot:hover {
+            border-color: var(--accent-gold);
+        }
+
+        .slot-header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .slot-position {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-gold);
+        }
+
+        .card-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #fff;
+            margin-top: 2px;
+        }
+
+        .interpretation-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+
+        .verbatim-text {
+            border-left: 2px solid var(--accent-gold);
+            padding-left: 12px;
+            font-style: italic;
+            color: #f1f5f9;
+        }
+
+        .bullet-list {
+            list-style-type: none;
+        }
+
+        .bullet-list li {
+            position: relative;
+            padding-left: 18px;
+            margin-bottom: 8px;
+        }
+
+        .bullet-list li::before {
+            content: "•";
+            color: var(--accent-gold);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        /* Bottom Live Anchor Banner */
+        .anchor-box {
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px solid var(--accent-gold);
+            border-radius: 8px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .anchor-text {
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .anchor-text strong {
+            color: var(--accent-gold);
+        }
+
+        .btn-copy {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .btn-copy:hover {
+            background: var(--accent-gold);
+            color: #000;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-title">
+            <span>PSYCHIC LINE OPERATOR DESK</span>
+            <span class="rate-badge">£30 / 20 MIN SESSION</span>
+        </div>
+        <div class="timer-container">
+            <span class="section-label" style="margin:0;">CALL TIMER</span>
+            <div class="timer-display" id="timer">20:00</div>
+            <button class="btn-timer" id="startTimerBtn">Start</button>
+            <button class="btn-timer" id="resetTimerBtn">Reset</button>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Sidebar Controls -->
+        <div class="sidebar">
+            <div>
+                <span class="section-label">Caller Situation</span>
+                <div class="category-grid">
+                    <button class="cat-btn active" onclick="setCategory('single')">Single / Dating</button>
+                    <button class="cat-btn" onclick="setCategory('relationship')">In Relationship</button>
+                    <button class="cat-btn" onclick="setCategory('career')">Career / Money</button>
+                    <button class="cat-btn" onclick="setCategory('life')">General Life</button>
+                </div>
+            </div>
+
+            <button class="btn-draw" onclick="drawSpread()">SHUFFLE & DRAW SPREAD</button>
+
+            <div class="caller-notes">
+                <span class="section-label">Caller Notes & Name</span>
+                <textarea placeholder="Type caller name, key details, and background here..."></textarea>
+            </div>
+        </div>
+
+        <!-- Main Reading Workspace -->
+        <div class="workspace">
+            <div class="view-controls">
+                <div>
+                    <span class="section-label" style="margin:0;">Reading Framework</span>
+                    <h2 style="font-size: 1.1rem; color: #fff;">3-Card Emotional Mirror Spread</h2>
+                </div>
+                <div class="toggle-group">
+                    <button class="toggle-btn active" id="btnScript" onclick="setMode('script')">Verbatim Script</button>
+                    <button class="toggle-btn" id="btnBullet" onclick="setMode('bullet')">Operator Bullets</button>
+                </div>
+            </div>
+
+            <!-- 3 Card Spread Display -->
+            <div class="cards-container" id="cardsContainer">
+                <!-- Cards injected dynamically via JS -->
+            </div>
+
+            <!-- Bottom Live Reassurance Anchor -->
+            <div class="anchor-box">
+                <div class="anchor-text">
+                    <strong>Recommended Closing Reassurance Phrase:</strong><br>
+                    <span id="anchorPhrase">"You don't need to force an answer or a decision today. Focus on taking just one deep breath and releasing what isn't yours to fix."</span>
+                </div>
+                <button class="btn-copy" onclick="copyAnchor()">Copy Script</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Database of Card Interpretations (Deep, Grounding, £30 Session Quality)
+        const TAROT_DB = [
+            {
+                name: "The Tower",
+                positions: {
+                    validation: {
+                        single: "You are experiencing sudden shock or emotional disruption. An unexpected change has shaken your trust in how things were supposed to turn out.",
+                        relationship: "A sudden rift or difficult truth has come to light. It feels like the foundation beneath you is unstable right now.",
+                        career: "Unexpected workplace changes or sudden bad news have caught you off guard, creating an immediate spike in panic or stress."
+                    },
+                    release: {
+                        single: "Release the desire to keep holding up an old situation that was already cracking. Stop trying to repair something that harmed your peace.",
+                        relationship: "Release the impulse to fix everything in this exact hour. You do not need to rebuild the entire building while the ground is shaking.",
+                        career: "Release the guilt or feeling that you should have predicted this. Corporate shifts and outside factors are beyond your direct control."
+                    },
+                    control: {
+                        single: "Focus strictly on your immediate emotional safety today. Ground yourself in what remains solid: your worth and your independence.",
+                        relationship: "Step back and allow the dust to settle before having another intense conversation. Silence today is better than panicked words.",
+                        career: "Update your portfolio or CV quietly. Shift your focus from what was destroyed to the blank canvas in front of you."
+                    }
+                }
+            },
+            {
+                name: "The Star",
+                positions: {
+                    validation: {
+                        single: "You have been through a exhausting emotional storm and your spirit is seeking peace, renewal, and gentle hope.",
+                        relationship: "After a long period of tension, you are looking for clarity, quiet healing, and a sign that things can soften.",
+                        career: "You've been overworked and depleted. You are seeking inspiration and a reminder that your hard work actually matters."
+                    },
+                    release: {
+                        single: "Release the pressure to rush into the next chapter immediately. Healing doesn't happen on an aggressive timeline.",
+                        relationship: "Release past resentments that you are keeping alive out of fear. Allow the relationship space to breathe without past baggage.",
+                        career: "Release the fear that you have fallen behind. Your long-term path is intact even if daily progress feels slow."
+                    },
+                    control: {
+                        single: "Treat yourself with extreme care today. Do something purely for your own comfort and nervous system regulation.",
+                        relationship: "Extend a calm, peaceful gesture without demanding a deep explanation or immediate resolution in return.",
+                        career: "Spend 20 minutes focusing on a creative project or skill that genuinely reminds you why you chose this path."
+                    }
+                }
+            },
+            {
+                name: "Two of Swords",
+                positions: {
+                    validation: {
+                        single: "You feel completely torn between two choices or emotions—wanting connection vs protecting your heart.",
+                        relationship: "You are feeling stuck in a stalemate, avoiding a hard conversation because you fear the potential outcome.",
+                        career: "You are feeling paralyzed by a career decision, weighing pros and cons in endless mental loops."
+                    },
+                    release: {
+                        single: "Release the belief that you must make a permanent decision today. It is completely okay to remain undecided for now.",
+                        relationship: "Release the need to read their mind. Stop trying to anticipate how they will react before they even speak.",
+                        career: "Release the illusion that there is a 'perfect' choice. Both options carry pros and cons, but waiting forever creates panic."
+                    },
+                    control: {
+                        single: "Remove your blindfold by focusing strictly on observable facts rather than your anxious assumptions.",
+                        relationship: "Set a boundary around your own time today. Give yourself permission to pause the discussion until mind is clear.",
+                        career: "Gather one specific missing fact or detail today instead of over-analyzing existing incomplete information."
+                    }
+                }
+            },
+            {
+                name: "Three of Swords",
+                positions: {
+                    validation: {
+                        single: "There is an active, sharp ache in your chest. You are grieving a disappointment, rejection, or broken trust.",
+                        relationship: "Words have been spoken that deeply hurt you. You are feeling wounded and misunderstood by someone close.",
+                        career: "You feel betrayed, undervalued, or pushed out at work. The emotional weight feels heavy to carry today."
+                    },
+                    release: {
+                        single: "Release the urge to replay painful conversations over and over. Replaying the memory does not change the outcome.",
+                        relationship: "Release the need to force them to acknowledge your pain right now. Pain cannot be cured by an argument.",
+                        career: "Release taking workplace coldness personally. Corporate or professional decisions rarely reflect your core value."
+                    },
+                    control: {
+                        single: "Acknowledge the grief without judgment, then actively do one small physical thing to care for your body today.",
+                        relationship: "Communicate your boundary calmly, then step away. Give the emotional wound room to breathe without reopening it.",
+                        career: "Separate your self-esteem from your job title today. Seek support from trusted friends outside of work."
+                    }
+                }
+            }
+        ];
+
+        let currentCategory = 'single';
+        let currentMode = 'script';
+        let currentDraw = [];
+
+        function setCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            if (currentDraw.length > 0) renderSpread();
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('btnScript').classList.toggle('active', mode === 'script');
+            document.getElementById('btnBullet').classList.toggle('active', mode === 'bullet');
+            if (currentDraw.length > 0) renderSpread();
+        }
+
+        function drawSpread() {
+            // Pick 3 unique cards
+            let shuffled = [...TAROT_DB].sort(() => 0.5 - Math.random());
+            currentDraw = shuffled.slice(0, 3);
+            renderSpread();
+        }
+
+        function renderSpread() {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+
+            const positions = [
+                { key: 'validation', title: 'CARD 1: CURRENT EMOTIONAL STATE (VALIDATION)' },
+                { key: 'release', title: 'CARD 2: WHAT TO RELEASE (ANXIETY DRAIN)' },
+                { key: 'control', title: 'CARD 3: WHAT YOU CAN CONTROL TODAY (AGENCY)' }
+            ];
+
+            currentDraw.forEach((card, index) => {
+                const pos = positions[index];
+                const text = card.positions[pos.key][currentCategory] || card.positions[pos.key]['single'];
+
+                let contentHtml = '';
+                if (currentMode === 'script') {
+                    contentHtml = `<div class="interpretation-content verbatim-text">"${text}"</div>`;
+                } else {
+                    const bullets = text.split('. ').filter(s => s.length > 3);
+                    contentHtml = `<ul class="bullet-list interpretation-content">${bullets.map(b => `<li>${b.endsWith('.') ? b : b + '.'}</li>`).join('')}</ul>`;
+                }
+
+                const slot = document.createElement('div');
+                slot.className = 'card-slot';
+                slot.innerHTML = `
+                    <div class="slot-header">
+                        <span class="slot-position">${pos.title}</span>
+                        <div class="card-name">${card.name}</div>
+                    </div>
+                    ${contentHtml}
+                `;
+                container.appendChild(slot);
+            });
+        }
+
+        // Session Timer Logic
+        let timerInterval;
+        let timeLeft = 1200; // 20 mins
+
+        document.getElementById('startTimerBtn').onclick = function() {
+            if (timerInterval) return;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                let m = Math.floor(timeLeft / 60);
+                let s = timeLeft % 60;
+                let display = `${m}:${s < 10 ? '0' : ''}${s}`;
+                const el = document.getElementById('timer');
+                el.innerText = display;
+                if (timeLeft <= 180) el.classList.add('warning');
+                if (timeLeft <= 0) clearInterval(timerInterval);
+            }, 1000);
+        };
+
+        document.getElementById('resetTimerBtn').onclick = function() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timeLeft = 1200;
+            const el = document.getElementById('timer');
+            el.innerText = "20:00";
+            el.classList.remove('warning');
+        };
+
+        function copyAnchor() {
+            const text = document.getElementById('anchorPhrase').innerText;
+            navigator.clipboard.writeText(text);
+            alert("Anchor script copied to clipboard!");
+        }
+
+        // Initial Draw
+        drawSpread();
+    </script>
+</body>
+</html>
